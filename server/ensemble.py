@@ -3,16 +3,22 @@ import json
 
 def aggregate_outputs(outputs):
 
-    parsed = []
+    parsed_results = []
 
     for out in outputs:
 
         try:
-            parsed.append(json.loads(out))
+            parsed = json.loads(out)
         except:
-            parsed.append({"raw": out})
+            parsed = {
+                "issue": "unknown",
+                "severity": "low",
+                "confidence": 0.0,
+                "explanation": out
+            }
+
+        parsed_results.append(parsed)
 
     return {
-        "ensemble_size": len(outputs),
-        "results": parsed
+        "results": parsed_results
     }
