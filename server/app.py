@@ -5,6 +5,9 @@ from server.model_loader import load_models
 from server.reviewer import run_review
 
 app = FastAPI()
+@app.get("/")
+def root():
+    return {"message": "AI Code Review Server Running"}
 
 models = load_models()
 
