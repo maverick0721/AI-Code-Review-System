@@ -7,10 +7,7 @@ from cli.chunker import chunk_code
 from cli.prompt_builder import build_prompt
 from cli.client import send_for_review
 
-app = typer.Typer()
 
-
-@app.command()
 def review(path: str = "."):
     """Run AI code review on a repository."""
 
@@ -41,9 +38,5 @@ def review(path: str = "."):
             print(result)
 
 
-def main():
-    app()
-
-
 if __name__ == "__main__":
-    main()
+    typer.run(review)
