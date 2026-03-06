@@ -9,8 +9,9 @@ from vllm import LLM
 def load_models():
 
     model = LLM(
-        model="TheBloke/Qwen2.5-Coder-7B-Instruct-AWQ",
+        model="TheBloke/Mistral-7B-v0.1-AWQ",
         quantization="awq",
+        dtype="float16",
         trust_remote_code=True, # Often needed for modern models 
         enforce_eager=True,          # Bypasses complex CUDA graph capture
         disable_log_stats=True,   # <--- This stops the periodic widget updates
