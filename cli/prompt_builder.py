@@ -1,26 +1,38 @@
 def build_prompt(file_path, code_chunk):
 
     prompt = f"""
-You are a senior software engineer performing a production code review.
+You are a senior security engineer reviewing code.
 
 File: {file_path}
 
-Review the code for:
+Analyze the code and detect security issues.
 
-1. Security vulnerabilities
-2. Logical bugs
-3. Performance issues
-4. Concurrency risks
-5. Code smell
-6. Refactoring suggestions
+Return ONLY valid JSON in this format:
 
-Return structured JSON with:
+{{
+  "issue": "<category>",
+  "severity": "<low|medium|high|critical>",
+  "confidence": <0-1>,
+  "explanation": "<short explanation>"
+}}
 
-- issues
-- severity (Low / Medium / High / Critical)
-- confidence (0-1)
+Possible issue categories include:
 
-Code to review:
+- hardcoded credential
+- sql injection
+- command injection
+- path traversal
+- insecure randomness
+- unsafe deserialization
+- weak crypto
+- eval injection
+- insecure temp file
+- sensitive data exposure
+- insecure ssl
+- unsafe file handling
+- none
+
+Code:
 
 {code_chunk}
 """
