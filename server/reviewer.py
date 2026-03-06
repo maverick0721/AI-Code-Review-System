@@ -9,11 +9,10 @@ from vllm import SamplingParams
 def generate(model, prompt):
 
     sampling = SamplingParams(
-        temperature=0.1,
-        max_tokens=256,
-        top_p=0.9,
-        stop=["```", "\n\n"]
-    )
+    temperature=0.1,
+    max_tokens=256,
+    top_p=0.9
+)
 
     structured_prompt = f"""
 You are a security code review AI.
@@ -50,7 +49,7 @@ Code to review:
 JSON:
 """
 
-    outputs = model.generate(structured_prompt, sampling)
+    outputs = model.generate([structured_prompt], sampling)
 
     return outputs[0].outputs[0].text.strip()
 
