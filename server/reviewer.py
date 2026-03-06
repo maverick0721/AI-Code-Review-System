@@ -16,11 +16,24 @@ def generate(model, prompt):
     return outputs[0].outputs[0].text
 
 
-def run_review(models, prompt):
+def run_review(models, prompt, static_results):
 
-    context = retrieve_context(prompt)
+    rag_context = retrieve_context(prompt)
 
-    full_prompt = context + "\n" + prompt
+    static_context = f"""
+Static analysis results:
+
+Bandit:
+{static_results.get("bandit")}
+
+Ruff:
+{static_results.get("ruff")}
+
+Semgrep:
+{static_results.get("semgrep")}
+"""
+
+    full_prompt = rag_context + "\n" + static_context + "\n" + prompt
 
     results = []
 
@@ -30,6 +43,4 @@ def run_review(models, prompt):
 
         results.append(output)
 
-    final = aggregate_outputs(results)
-
-    return final
+    return aggregate_outputs(results)
