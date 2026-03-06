@@ -8,7 +8,7 @@ os.environ["VLLM_V1_INPROC"] = "0"
 def load_models():
 
     model = LLM(
-        model="meta-llama/Meta-Llama-3-8B-Instruct",
+        model="Qwen/Qwen2.5-Coder-7B-Instruct",
         dtype="float16",
         trust_remote_code=True, # Often needed for modern models 
         enforce_eager=True,          # Bypasses complex CUDA graph capture
