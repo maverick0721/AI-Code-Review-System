@@ -1,16 +1,19 @@
 import typer
 from rich import print
 
-from git_utils import get_changed_files
-from diff_parser import extract_diff_context
-from chunker import chunk_code
-from prompt_builder import build_prompt
-from client import send_for_review
+from cli.git_utils import get_changed_files
+from cli.diff_parser import extract_diff_context
+from cli.chunker import chunk_code
+from cli.prompt_builder import build_prompt
+from cli.client import send_for_review
 
 app = typer.Typer()
 
+
 @app.command()
 def review(path: str = "."):
+    """Run AI code review on a repository."""
+
     print("[bold green]Starting AI Code Review[/bold green]")
 
     files = get_changed_files(path)
@@ -36,6 +39,7 @@ def review(path: str = "."):
             result = send_for_review(prompt)
 
             print(result)
+
 
 if __name__ == "__main__":
     app()
