@@ -3,18 +3,56 @@ from server.ensemble import aggregate_outputs
 from server.rag import retrieve_context
 
 
+from vllm import SamplingParams
+
+
 def generate(model, prompt):
 
     sampling = SamplingParams(
-        temperature=0.2,
-        max_tokens=512,
-        top_p=0.9
+        temperature=0.1,
+        max_tokens=256,
+        top_p=0.9,
+        stop=["```", "\n\n"]
     )
 
-    outputs = model.generate(prompt, sampling)
+    structured_prompt = f"""
+You are a security code review AI.
 
-    return outputs[0].outputs[0].text
+Return ONLY valid JSON.
 
+Format:
+
+{{
+ "issue": "<category>",
+ "severity": "<low|medium|high|critical>",
+ "confidence": <0-1>,
+ "explanation": "<short explanation>"
+}}
+
+Categories:
+hardcoded credential
+sql injection
+command injection
+path traversal
+insecure randomness
+unsafe deserialization
+weak crypto
+eval injection
+insecure temp file
+sensitive data exposure
+insecure ssl
+unsafe file handling
+none
+
+Code to review:
+{prompt}
+
+JSON:
+"""
+
+    outputs = model.generate(structured_prompt, sampling)
+
+    return outputs[0].outputs[0].text.strip()
 
 def run_review(models, prompt, static_results):
 
