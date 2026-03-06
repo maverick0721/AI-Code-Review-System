@@ -1,0 +1,38 @@
+# API server
+fastapi>=0.110
+uvicorn[standard]>=0.30
+
+# LLM inference
+vllm==0.16.0
+torch>=2.2
+transformers>=4.40
+grpcio-reflection>=1.62
+
+# embeddings
+sentence-transformers>=3.0
+
+# vector search
+faiss-cpu>=1.8
+
+# distributed runtime for vLLM
+ray>=2.9,<3
+
+# GitHub integration
+PyGithub>=2.3
+
+# security scanning
+semgrep>=1.150
+bandit>=1.7
+
+# ML stack
+numpy>=1.26,<2
+scikit-learn>=1.5
+scipy>=1.13
+
+# utilities
+python-dotenv>=1.0
+requests>=2.32
+tqdm>=4.66
+
+# protobuf constraint required for vLLM ecosystem
+protobuf>=5.29.6,<7
