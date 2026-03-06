@@ -14,7 +14,7 @@ def load_models():
         trust_remote_code=True, # Often needed for modern models 
         enforce_eager=True,          # Bypasses complex CUDA graph capture
         disable_log_stats=True,   # <--- This stops the periodic widget updates
-        gpu_memory_utilization=0.8, # Leave room for the system
+        gpu_memory_utilization=0.75, # Leave room for the system
         tensor_parallel_size=1,       # Ensure single-process
         max_model_len=4096
 )
