@@ -5,11 +5,12 @@ def get_changed_files(repo_path="."):
 
     changed_files = []
 
-    diffs = repo.index.diff(None)
+    changed = [item.a_path for item in repo.index.diff(None)]
+    untracked = repo.untracked_files
 
-    for diff in diffs:
+    files = set(changed + untracked)
 
-        file_path = diff.a_path
+    for file_path in files:
 
         try:
             with open(file_path, "r") as f:
