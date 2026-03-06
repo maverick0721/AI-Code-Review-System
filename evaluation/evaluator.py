@@ -1,11 +1,13 @@
 import json
-import requests
+import asyncio
+import httpx
 from collections import defaultdict
 
 from evaluation.metrics import compute_precision, compute_recall, compute_f1
 
 
 SERVER_URL = "http://localhost:8000/review"
+CONCURRENCY = 10
 
 
 def normalize(text):
@@ -13,39 +15,42 @@ def normalize(text):
 
 
 def extract_predicted_issue(result):
-
     try:
-        issue = result["results"][0]["issue"]
-        return issue.lower().strip()
+        return result["results"][0]["issue"].lower()
     except:
         return "none"
 
 
-def run_evaluation():
+async def evaluate_sample(client, sample):
 
-    with open("evaluation/dataset.json") as f:
-        dataset = json.load(f)
+    prompt = f"Review this code:\n{sample['code']}"
 
-    tp = 0
-    fp = 0
-    fn = 0
+    response = await client.post(
+        SERVER_URL,
+        json={"prompt": prompt},
+        timeout=60
+    )
 
+    result = response.json()
+
+    predicted = extract_predicted_issue(result)
+    expected = normalize(sample["expected_issue"])
+
+    return predicted, expected
+
+
+async def run_async_evaluation(dataset):
+
+    tp = fp = fn = 0
     category_stats = defaultdict(lambda: {"tp": 0, "fp": 0, "fn": 0})
 
-    for sample in dataset:
+    async with httpx.AsyncClient() as client:
 
-        prompt = f"Review this code:\n{sample['code']}"
+        tasks = [evaluate_sample(client, s) for s in dataset]
 
-        response = requests.post(
-            SERVER_URL,
-            json={"prompt": prompt}
-        )
+        results = await asyncio.gather(*tasks)
 
-        result = response.json()
-
-        predicted = extract_predicted_issue(result)
-
-        expected = normalize(sample["expected_issue"])
+    for predicted, expected in results:
 
         if predicted == expected:
             tp += 1
@@ -82,6 +87,14 @@ def run_evaluation():
             f"R={round(r,3)} "
             f"F1={round(f,3)}"
         )
+
+
+def run_evaluation():
+
+    with open("evaluation/dataset.json") as f:
+        dataset = json.load(f)
+
+    asyncio.run(run_async_evaluation(dataset))
 
 
 if __name__ == "__main__":
