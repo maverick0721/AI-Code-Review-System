@@ -1,0 +1,265 @@
+[
+    {
+        "code": "password='123456'",
+        "expected_issue": "hardcoded credential"
+    },
+    {
+        "code": "api_key='abcd1234'",
+        "expected_issue": "hardcoded credential"
+    },
+    {
+        "code": "secret='mysecret'",
+        "expected_issue": "hardcoded credential"
+    },
+    {
+        "code": "token='ghp_123456789'",
+        "expected_issue": "hardcoded credential"
+    },
+    {
+        "code": "db_password='root'",
+        "expected_issue": "hardcoded credential"
+    },
+    {
+        "code": "query = 'SELECT * FROM users WHERE id=' + user_id",
+        "expected_issue": "sql injection"
+    },
+    {
+        "code": "sql = \"SELECT * FROM accounts WHERE name='\" + name + \"'\"",
+        "expected_issue": "sql injection"
+    },
+    {
+        "code": "query='DELETE FROM users WHERE id='+uid",
+        "expected_issue": "sql injection"
+    },
+    {
+        "code": "cursor.execute('SELECT * FROM users WHERE name='+name)",
+        "expected_issue": "sql injection"
+    },
+    {
+        "code": "sql=\"UPDATE users SET role='admin' WHERE id=\"+user_id",
+        "expected_issue": "sql injection"
+    },
+    {
+        "code": "subprocess.run(user_input, shell=True)",
+        "expected_issue": "command injection"
+    },
+    {
+        "code": "os.system('ls ' + filename)",
+        "expected_issue": "command injection"
+    },
+    {
+        "code": "subprocess.call('rm ' + file, shell=True)",
+        "expected_issue": "command injection"
+    },
+    {
+        "code": "subprocess.Popen(user_cmd, shell=True)",
+        "expected_issue": "command injection"
+    },
+    {
+        "code": "os.system('cat '+path)",
+        "expected_issue": "command injection"
+    },
+    {
+        "code": "open('../../etc/passwd')",
+        "expected_issue": "path traversal"
+    },
+    {
+        "code": "file=open('../secret.txt')",
+        "expected_issue": "path traversal"
+    },
+    {
+        "code": "open(user_input)",
+        "expected_issue": "path traversal"
+    },
+    {
+        "code": "path='../../config.yml'",
+        "expected_issue": "path traversal"
+    },
+    {
+        "code": "with open('../../private.key') as f: pass",
+        "expected_issue": "path traversal"
+    },
+    {
+        "code": "import random\nrandom.random()",
+        "expected_issue": "insecure randomness"
+    },
+    {
+        "code": "random.randint(1,1000000)",
+        "expected_issue": "insecure randomness"
+    },
+    {
+        "code": "token=str(random.random())",
+        "expected_issue": "insecure randomness"
+    },
+    {
+        "code": "password=str(random.randint(1000,9999))",
+        "expected_issue": "insecure randomness"
+    },
+    {
+        "code": "session_id=random.random()",
+        "expected_issue": "insecure randomness"
+    },
+    {
+        "code": "pickle.loads(user_data)",
+        "expected_issue": "unsafe deserialization"
+    },
+    {
+        "code": "import pickle\npickle.load(f)",
+        "expected_issue": "unsafe deserialization"
+    },
+    {
+        "code": "yaml.load(data)",
+        "expected_issue": "unsafe deserialization"
+    },
+    {
+        "code": "marshal.loads(data)",
+        "expected_issue": "unsafe deserialization"
+    },
+    {
+        "code": "pickle.loads(request.data)",
+        "expected_issue": "unsafe deserialization"
+    },
+    {
+        "code": "hashlib.md5(password).hexdigest()",
+        "expected_issue": "weak crypto"
+    },
+    {
+        "code": "hashlib.sha1(data).hexdigest()",
+        "expected_issue": "weak crypto"
+    },
+    {
+        "code": "hashlib.md5('secret').hexdigest()",
+        "expected_issue": "weak crypto"
+    },
+    {
+        "code": "digest=hashlib.sha1(password).hexdigest()",
+        "expected_issue": "weak crypto"
+    },
+    {
+        "code": "hashlib.md5(user_input)",
+        "expected_issue": "weak crypto"
+    },
+    {
+        "code": "eval(user_input)",
+        "expected_issue": "eval injection"
+    },
+    {
+        "code": "exec(user_code)",
+        "expected_issue": "eval injection"
+    },
+    {
+        "code": "eval(request.GET['expr'])",
+        "expected_issue": "eval injection"
+    },
+    {
+        "code": "exec(open('script.py').read())",
+        "expected_issue": "eval injection"
+    },
+    {
+        "code": "eval(data)",
+        "expected_issue": "eval injection"
+    },
+    {
+        "code": "tempfile.mktemp()",
+        "expected_issue": "insecure temp file"
+    },
+    {
+        "code": "tmp=tempfile.mktemp()",
+        "expected_issue": "insecure temp file"
+    },
+    {
+        "code": "path=tempfile.mktemp('.txt')",
+        "expected_issue": "insecure temp file"
+    },
+    {
+        "code": "f=open(tempfile.mktemp(),'w')",
+        "expected_issue": "insecure temp file"
+    },
+    {
+        "code": "tmp_file=tempfile.mktemp()",
+        "expected_issue": "insecure temp file"
+    },
+    {
+        "code": "subprocess.run(['bash','-c',user_cmd])",
+        "expected_issue": "command injection"
+    },
+    {
+        "code": "os.system(user_cmd)",
+        "expected_issue": "command injection"
+    },
+    {
+        "code": "subprocess.call(user_cmd,shell=True)",
+        "expected_issue": "command injection"
+    },
+    {
+        "code": "cmd='ls '+user_input\nos.system(cmd)",
+        "expected_issue": "command injection"
+    },
+    {
+        "code": "subprocess.Popen(['sh','-c',cmd])",
+        "expected_issue": "command injection"
+    },
+    {
+        "code": "f=open('/tmp/file','w');f.write(password)",
+        "expected_issue": "sensitive data exposure"
+    },
+    {
+        "code": "print(secret_key)",
+        "expected_issue": "sensitive data exposure"
+    },
+    {
+        "code": "log.info(password)",
+        "expected_issue": "sensitive data exposure"
+    },
+    {
+        "code": "print(api_key)",
+        "expected_issue": "sensitive data exposure"
+    },
+    {
+        "code": "logger.debug(token)",
+        "expected_issue": "sensitive data exposure"
+    },
+    {
+        "code": "import ssl\nssl._create_unverified_context()",
+        "expected_issue": "insecure ssl"
+    },
+    {
+        "code": "requests.get(url,verify=False)",
+        "expected_issue": "insecure ssl"
+    },
+    {
+        "code": "urllib3.disable_warnings()",
+        "expected_issue": "insecure ssl"
+    },
+    {
+        "code": "ssl_context.verify_mode=ssl.CERT_NONE",
+        "expected_issue": "insecure ssl"
+    },
+    {
+        "code": "requests.post(url,verify=False)",
+        "expected_issue": "insecure ssl"
+    },
+    {
+        "code": "with open('file.txt','w') as f:f.write(user_input)",
+        "expected_issue": "unsafe file handling"
+    },
+    {
+        "code": "open('/etc/passwd','w')",
+        "expected_issue": "unsafe file handling"
+    },
+    {
+        "code": "file.write(request.data)",
+        "expected_issue": "unsafe file handling"
+    },
+    {
+        "code": "f.write(password)",
+        "expected_issue": "unsafe file handling"
+    },
+    {
+        "code": "file=open('config','w');file.write(secret)",
+        "expected_issue": "unsafe file handling"
+    },
+    {
+        "_comment": "Later more cases can be added if wanted"
+    }
+]
