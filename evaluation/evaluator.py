@@ -14,28 +14,11 @@ def normalize(text):
 
 def extract_predicted_issue(result):
 
-    text = json.dumps(result).lower()
-
-    keywords = [
-        "hardcoded credential",
-        "sql injection",
-        "command injection",
-        "path traversal",
-        "insecure randomness",
-        "unsafe deserialization",
-        "weak crypto",
-        "eval injection",
-        "insecure temp file",
-        "sensitive data exposure",
-        "insecure ssl",
-        "unsafe file handling"
-    ]
-
-    for k in keywords:
-        if k in text:
-            return k
-
-    return "none"
+    try:
+        issue = result["results"][0]["issue"]
+        return issue.lower().strip()
+    except:
+        return "none"
 
 
 def run_evaluation():

@@ -258,8 +258,5 @@
     {
         "code": "file=open('config','w');file.write(secret)",
         "expected_issue": "unsafe file handling"
-    },
-    {
-        "_comment": "Later more cases can be added if wanted"
     }
 ]
