@@ -1,24 +1,34 @@
 import json
+import re
+
+
+def extract_json(text):
+
+    try:
+        return json.loads(text)
+    except:
+
+        match = re.search(r"\{.*\}", text, re.DOTALL)
+
+        if match:
+            try:
+                return json.loads(match.group())
+            except:
+                pass
+
+    return {
+        "issue": "unknown",
+        "severity": "low",
+        "confidence": 0.0,
+        "explanation": text
+    }
 
 
 def aggregate_outputs(outputs):
 
-    parsed_results = []
+    parsed = []
 
     for out in outputs:
+        parsed.append(extract_json(out))
 
-        try:
-            parsed = json.loads(out)
-        except:
-            parsed = {
-                "issue": "unknown",
-                "severity": "low",
-                "confidence": 0.0,
-                "explanation": out
-            }
-
-        parsed_results.append(parsed)
-
-    return {
-        "results": parsed_results
-    }
+    return {"results": parsed}
