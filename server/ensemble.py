@@ -4,17 +4,13 @@ import re
 
 def extract_json(text):
 
-    try:
-        return json.loads(text)
-    except:
+    matches = re.findall(r"\{.*?\}", text, re.DOTALL)
 
-        match = re.search(r"\{.*\}", text, re.DOTALL)
-
-        if match:
-            try:
-                return json.loads(match.group())
-            except:
-                pass
+    for m in matches:
+        try:
+            return json.loads(m)
+        except:
+            continue
 
     return {
         "issue": "unknown",

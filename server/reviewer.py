@@ -6,26 +6,31 @@ from server.rag import retrieve_context
 from vllm import SamplingParams
 
 
+from vllm import SamplingParams
+
 def generate(model, prompt):
 
     sampling = SamplingParams(
-    temperature=0.1,
-    max_tokens=256,
-    top_p=0.9
-)
+        temperature=0.0,
+        max_tokens=200,
+        top_p=0.9,
+        stop=["\n\n"]
+    )
 
     structured_prompt = f"""
-You are a security code review AI.
+You are an AI security code reviewer.
 
-Return ONLY valid JSON.
+Return ONLY a valid JSON object.
+
+Do not add explanations outside JSON.
 
 Format:
 
 {{
- "issue": "<category>",
- "severity": "<low|medium|high|critical>",
- "confidence": <0-1>,
- "explanation": "<short explanation>"
+  "issue": "<category>",
+  "severity": "<low|medium|high|critical>",
+  "confidence": <0-1>,
+  "explanation": "<short explanation>"
 }}
 
 Categories:
@@ -43,7 +48,7 @@ insecure ssl
 unsafe file handling
 none
 
-Code to review:
+Code:
 {prompt}
 
 JSON:
