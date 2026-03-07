@@ -1,4 +1,8 @@
 import os
+import multiprocessing as mp
+
+mp.set_start_method("spawn", force=True)
+os.environ["VLLM_WORKER_MULTIPROC_METHOD"] = "spawn"
 
 # Force V0 and disable the experimental V1 components entirely
 os.environ["VLLM_USE_V1"] = "0"

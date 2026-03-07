@@ -1,15 +1,16 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
+import asyncio
 
-from server.model_loader import load_models
-from server.reviewer import run_review
-
-from core.static_analysis import run_bandit, run_ruff, run_semgrep
-
+from server.review_queue import enqueue
+from server.gpu_worker import worker
 
 app = FastAPI()
 
-models = load_models()
+
+@app.on_event("startup")
+async def start_worker():
+    asyncio.create_task(worker())
 
 
 class ReviewRequest(BaseModel):
@@ -23,16 +24,21 @@ def root():
 
 
 @app.post("/review")
-def review(request: ReviewRequest):
+async def review(req: Request):
 
-    static_results = {}
+    data = await req.json()
 
-    if request.repo_path:
+    prompt = data.get("prompt")
 
-        static_results["bandit"] = run_bandit(request.repo_path)
-        static_results["ruff"] = run_ruff(request.repo_path)
-        static_results["semgrep"] = run_semgrep(request.repo_path)
+    loop = asyncio.get_event_loop()
 
-    result = run_review(models, request.prompt, static_results)
+    future = loop.create_future()
 
-    return result
+    await enqueue({
+        "prompt": prompt,
+        "future": future
+    })
+
+    result = await future
+
+    return {"results": result}

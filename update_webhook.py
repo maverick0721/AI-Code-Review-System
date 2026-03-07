@@ -5,11 +5,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # get ngrok public URL
-ngrok_api = os.getenv("NGROK_API")
-res = requests.get(ngrok_api).json()
-public_url = res["tunnels"][0]["public_url"]
+ngrok_url = os.getenv("NGROK_API_URL")
+webhook_url = f"{ngrok_url}/github-webhook"
 
-webhook_url = f"{public_url}/github-webhook"
+print("Webhook:", webhook_url)
 
 # GitHub info
 repo = os.getenv("GITHUB_REPO")

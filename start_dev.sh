@@ -1,39 +1,78 @@
 #!/bin/bash
 
+echo "🚀 Starting AI Code Review development environment"
+
 # ------------------------------
-# Kill old processes to avoid conflicts
+# Load environment variables
+# ------------------------------
+if [ -f .env ]; then
+  export $(grep -v '^#' .env | xargs)
+fi
+
+# ------------------------------
+# Activate virtual environment
+# ------------------------------
+source .venv/bin/activate
+
+# ------------------------------
+# Check dependencies
+# ------------------------------
+command -v ngrok >/dev/null 2>&1 || { echo "❌ ngrok is required"; exit 1; }
+command -v jq >/dev/null 2>&1 || { echo "❌ jq is required"; exit 1; }
+
+# ------------------------------
+# Kill old processes
 # ------------------------------
 pkill -f uvicorn || true
 pkill ngrok || true
+fuser -k 8000/tcp || true
+fuser -k 9000/tcp || true
 
 # ------------------------------
-# Start main FastAPI app with auto-reload (port 8000)
+# Start AI server
 # ------------------------------
+echo "Starting AI inference server..."
 uvicorn server.app:app --host 0.0.0.0 --port 8000 --reload > server.log 2>&1 &
 
-# Start GitHub bot FastAPI app with auto-reload (port 9000)
+# ------------------------------
+# Start GitHub webhook bot
+# ------------------------------
+echo "Starting GitHub bot server..."
 uvicorn integrations.github_bot:app --host 0.0.0.0 --port 9000 --reload > github_bot.log 2>&1 &
 
 # ------------------------------
-# Wait until port 9000 is ready
+# Wait until bot server is ready
 # ------------------------------
-echo "⏳ Waiting for GitHub bot server to start on port 9000..."
-while ! nc -z 127.0.0.1 9000; do   
+echo "⏳ Waiting for GitHub bot server..."
+
+while ! nc -z 127.0.0.1 9000; do
   sleep 0.5
 done
-echo "✅ GitHub bot server is ready!"
+
+echo "✅ GitHub bot server ready"
 
 # ------------------------------
-# Start ngrok for GitHub bot
+# Start ngrok
 # ------------------------------
-ngrok http 9000 &
-
-# Wait for ngrok to initialize
-sleep 3
+echo "Starting ngrok tunnel..."
+ngrok http 9000 > ngrok.log 2>&1 &
 
 # ------------------------------
-# Update GitHub webhook automatically
+# Wait for ngrok API
 # ------------------------------
+echo "⏳ Waiting for ngrok..."
+
+while ! curl -s http://localhost:4040/api/tunnels > /dev/null; do
+  sleep 1
+done
+
+echo "✅ ngrok ready"
+
+# ------------------------------
+# Update GitHub webhook
+# ------------------------------
+echo "Updating GitHub webhook..."
+
 python update_webhook.py
 
-echo "✅ Development environment started successfully"
+echo "🎉 Development environment ready"

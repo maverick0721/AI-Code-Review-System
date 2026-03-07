@@ -1,17 +1,22 @@
-import dotenv
 import os
 import requests
 from fastapi import FastAPI, Request
+import dotenv
+
+from core.pr_diff_parser import extract_changes
 
 dotenv.load_dotenv()
 
 app = FastAPI()
 
+
 @app.get("/")
 def root():
     return {"status": "GitHub AI Review Bot Running"}
 
-AI_SERVER = "http://localhost:8000/review"
+
+AI_SERVER = os.getenv("AI_SERVER")
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
 
 @app.post("/github-webhook")
@@ -27,54 +32,51 @@ async def github_webhook(req: Request):
 
     diff_url = pr["diff_url"]
 
+    # Download PR diff
     diff = requests.get(diff_url).text
+
+    # Extract changes from diff
+    chunks = extract_changes(diff)
+
+    for chunk in chunks:
 
     response = requests.post(
         AI_SERVER,
-        json={"prompt": diff},
+        json={"changes": chunk},
         timeout=120
     )
 
-    result = response.json()
+    issues = response.json()["issues"]
 
-    comment = format_comment(result)
-
-    post_comment(repo, pr["number"], comment)
+    for issue in issues:
+        post_inline_comment(repo, pr["number"], issue)
 
     return {"status": "review_posted"}
 
 
-def format_comment(result):
+def post_inline_comment(repo, pr_number, issue):
 
-    comments = []
+    url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}/comments"
 
-    for r in result["results"]:
+    body = {
+        "body": f"""
+### AI Security Issue
 
-        comments.append(
-            f"""
-### AI Security Review
+**Issue:** {issue['issue']}
+**Severity:** {issue['severity']}
 
-**Issue:** {r['issue']}  
-**Severity:** {r['severity']}  
-
-{r['explanation']}
-"""
-        )
-
-    return "\n".join(comments)
-
-
-def post_comment(repo, pr_number, body):
-
-    token = os.getenv("GITHUB_TOKEN")
-
-    url = f"https://api.github.com/repos/{repo}/issues/{pr_number}/comments"
+{issue['explanation']}
+""",
+        "path": issue["file"],
+        "line": issue["line"],
+        "side": "RIGHT"
+    }
 
     requests.post(
-    url,
-    headers={
-        "Authorization": f"Bearer {token}",
-        "Accept": "application/vnd.github+json"
-    },
-    json={"body": body}
-)
+        url,
+        headers={
+            "Authorization": f"Bearer {GITHUB_TOKEN}",
+            "Accept": "application/vnd.github+json"
+        },
+        json=body
+    )
