@@ -6,6 +6,10 @@ load_dotenv()
 
 # get ngrok public URL
 ngrok_url = os.getenv("NGROK_URL")
+
+if not ngrok_url:
+    raise Exception("NGROK_URL not found in .env")
+    
 webhook_url = f"{ngrok_url}/github-webhook"
 ngrok_token = os.getenv("NGROK_AUTH_TOKEN")
 
