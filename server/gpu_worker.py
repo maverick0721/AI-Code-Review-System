@@ -1,16 +1,37 @@
 import asyncio
-from server.review_queue import dequeue_batch
+from server.review_queue import review_queue
 from server.llm_engine import run_llm_batch
 
+MAX_BATCH = 16
+BATCH_TIMEOUT = 0.05
 
 async def worker():
 
     while True:
 
-        batch = await dequeue_batch(8)
+        batch = []
+        start = asyncio.get_event_loop().time()
+
+        while len(batch) < MAX_BATCH:
+
+            timeout = BATCH_TIMEOUT - (
+                asyncio.get_event_loop().time() - start
+            )
+
+            if timeout <= 0:
+                break
+
+            try:
+                item = await asyncio.wait_for(
+                    review_queue.get(),
+                    timeout=timeout
+                )
+                batch.append(item)
+
+            except asyncio.TimeoutError:
+                break
 
         if not batch:
-            await asyncio.sleep(0.1)
             continue
 
         prompts = [item["prompt"] for item in batch]

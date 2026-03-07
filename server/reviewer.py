@@ -1,12 +1,63 @@
 from vllm import SamplingParams
 from server.ensemble import aggregate_outputs
 from server.rag import retrieve_context
+from core.static_analysis import run_bandit, run_semgrep, run_ruff
+
+import json
+import re
 
 
-from vllm import SamplingParams
+def extract_json(text):
+    """
+    Extract valid JSON from model output.
+    Prevents failures if the model outputs extra text.
+    """
 
+    try:
+        return json.loads(text)
 
-from vllm import SamplingParams
+    except Exception:
+        match = re.search(r"\{.*\}", text, re.DOTALL)
+
+        if match:
+            try:
+                return json.loads(match.group())
+            except Exception:
+                pass
+
+    return {
+        "issue": "unknown",
+        "severity": "low",
+        "confidence": 0.0,
+        "explanation": "model output parsing failed"
+    }
+
+def rule_based_scan(code):
+
+    rules = []
+
+    if "password =" in code or "passwd =" in code:
+        rules.append("hardcoded credential")
+
+    if "eval(" in code:
+        rules.append("eval injection")
+
+    if "os.system(" in code:
+        rules.append("command injection")
+
+    if "subprocess" in code and "shell=True" in code:
+        rules.append("command injection")
+
+    if "../" in code:
+        rules.append("path traversal")
+
+    if "random.random()" in code:
+        rules.append("insecure randomness")
+
+    if "pickle.loads" in code:
+        rules.append("unsafe deserialization")
+
+    return rules
 
 def generate(model, prompt):
 
@@ -56,33 +107,52 @@ JSON:
 
     outputs = model.generate([structured_prompt], sampling)
 
-    return outputs[0].outputs[0].text.strip()
+    raw_output = outputs[0].outputs[0].text.strip()
 
-def run_review(models, prompt, static_results):
+    return extract_json(raw_output)
 
+
+def run_review(models, prompt):
+
+    # Run static analysis tools
+    static_results = {
+        "bandit": run_bandit(prompt),
+        "ruff": run_ruff(prompt),
+        "semgrep": run_semgrep(prompt)
+    }
+
+    # Retrieve RAG security context
     rag_context = retrieve_context(prompt)
 
+    rule_results = rule_based_scan(prompt)
+
     static_context = f"""
-Static analysis results:
+    Rule-based findings:
+    {rule_results}
 
-Bandit:
-{static_results.get("bandit")}
+    Static analysis findings:
 
-Ruff:
-{static_results.get("ruff")}
+    Bandit:
+    {static_results["bandit"]}
 
-Semgrep:
-{static_results.get("semgrep")}
-"""
+    Ruff:
+    {static_results["ruff"]}
 
+    Semgrep:
+    {static_results["semgrep"]}
+    """
+
+    # Combine all context
     full_prompt = rag_context + "\n" + static_context + "\n" + prompt
 
     results = []
 
+    # Run ensemble inference
     for model in models:
 
         output = generate(model, full_prompt)
 
         results.append(output)
 
+    # Aggregate ensemble outputs
     return aggregate_outputs(results)

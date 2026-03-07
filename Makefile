@@ -3,7 +3,9 @@
 AI_PORT=8000
 BOT_PORT=9000
 
-# Start full environment
+# ------------------------------
+# Full development environment
+# ------------------------------
 dev: ai bot ngrok webhook
 	@echo "🎉 Development environment ready"
 
@@ -47,10 +49,11 @@ ngrok:
 		kill -9 $$(cat ngrok.pid) 2>/dev/null || true; \
 		rm -f ngrok.pid; \
 	fi
-	@nohup ngrok http $(BOT_PORT) > ngrok.log 2>&1 & \
+	@echo "⏳ Waiting for ngrok to be ready..."
+	@export $$(grep NGROK_AUTH_TOKEN .env | xargs) && \
+	nohup ngrok http $(BOT_PORT) > ngrok.log 2>&1 & \
 	echo $$! > ngrok.pid
-	@sleep 3
-	@echo "Fetching ngrok URL..."
+	@sleep 5
 	@export NGROK_URL=$$(curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'); \
 	echo "NGROK_URL=$$NGROK_URL"; \
 	if grep -q NGROK_URL .env; then \
@@ -63,7 +66,7 @@ ngrok:
 # Show current ngrok URL
 # ------------------------------
 url:
-	@grep NGROK_URL .env
+	@grep NGROK_URL .env || echo "NGROK_URL not set"
 
 # ------------------------------
 # Update GitHub webhook
@@ -73,7 +76,7 @@ webhook:
 	@.venv/bin/python update_webhook.py
 
 # ------------------------------
-# View logs
+# Show logs
 # ------------------------------
 logs:
 	@echo ""

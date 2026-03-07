@@ -4,6 +4,7 @@ import asyncio
 
 from server.review_queue import enqueue
 from server.gpu_worker import worker
+from server.cache import get_cache, set_cache
 
 app = FastAPI()
 
@@ -27,8 +28,11 @@ def root():
 async def review(req: Request):
 
     data = await req.json()
-
     prompt = data.get("prompt")
+
+    cached = get_cache(prompt)
+    if cached:
+        return {"results": cached}
 
     loop = asyncio.get_event_loop()
 
@@ -40,5 +44,8 @@ async def review(req: Request):
     })
 
     result = await future
+    
+    set_cache(prompt, result)
 
     return {"results": result}
+

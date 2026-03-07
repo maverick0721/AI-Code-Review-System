@@ -1,0 +1,36 @@
+[project]
+name = "ai-code-review-system"
+version = "0.1.0"
+description = "AI powered security code review system using LLMs"
+authors = [
+    {name = "Shivang Gupta"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "typer",
+    "rich",
+    "requests",
+    "httpx",
+    "pydantic",
+    "python-dotenv",
+    "vllm",
+    "transformers",
+    "torch",
+]
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

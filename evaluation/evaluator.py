@@ -94,8 +94,8 @@ async def run_async_evaluation(dataset):
 
 def run_evaluation():
 
-    with open("evaluation/dataset.json") as f:
-        dataset = json.load(f)
+    with open("dataset/security_dataset.json") as f:
+    dataset = json.load(f)
 
     asyncio.run(run_async_evaluation(dataset))
 

@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+
+  ai-server:
+    build: .
+    container_name: ai-code-review-server
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: uvicorn server.app:app --host 0.0.0.0 --port 8000
+    restart: unless-stopped
+
+  github-bot:
+    build: .
+    container_name: ai-code-review-github-bot
+    ports:
+      - "9000:9000"
+    volumes:
+      - .:/app
+    command: uvicorn integrations.github_bot:app --host 0.0.0.0 --port 9000
+    restart: unless-stopped

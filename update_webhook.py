@@ -5,8 +5,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # get ngrok public URL
-ngrok_url = os.getenv("NGROK_API_URL")
+ngrok_url = os.getenv("NGROK_URL")
 webhook_url = f"{ngrok_url}/github-webhook"
+ngrok_token = os.getenv("NGROK_AUTH_TOKEN")
 
 print("Webhook:", webhook_url)
 
