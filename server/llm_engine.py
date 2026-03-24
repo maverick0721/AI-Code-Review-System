@@ -1,6 +1,7 @@
 import json
 import re
 import logging
+import os
 
 from server.model_loader import load_models
 
@@ -89,6 +90,10 @@ def run_llm(prompt):
 
 def run_llm_batch(prompts):
     global _fallback_logged
+
+    if os.getenv("AICR_FORCE_HEURISTIC", "0") == "1":
+        return [_heuristic_review(prompt) for prompt in prompts]
+
     try:
         models = _get_models()
         outputs = models[0].generate(prompts, max_tokens=256)

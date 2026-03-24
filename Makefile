@@ -1,4 +1,4 @@
-.PHONY: dev ai bot ngrok webhook url logs stop clean
+.PHONY: dev ai bot ngrok webhook url logs stop clean demo
 
 AI_PORT=8000
 BOT_PORT=9000
@@ -105,3 +105,9 @@ stop:
 # ------------------------------
 clean:
 	@rm -f *.log
+
+# ------------------------------
+# One-command project demo
+# ------------------------------
+demo:
+	@bash run_end_to_end_demo.sh

@@ -9,8 +9,6 @@ os.environ["VLLM_WORKER_MULTIPROC_METHOD"] = "spawn"
 os.environ["VLLM_USE_V1"] = "0"
 os.environ["VLLM_V1_INPROC"] = "0"
 
-from vllm import LLM
-
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +25,12 @@ def _gpu_mem_utilization():
         return 0.75
 
 def load_models():
+    try:
+        from vllm import LLM
+    except Exception:
+        logger.exception("vLLM import failed. Install vllm to enable model inference.")
+        raise
+
     model_name = _model_name()
     logger.info("Initializing vLLM model: %s", model_name)
 

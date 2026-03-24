@@ -143,6 +143,16 @@ This launches:
 - GitHub webhook bot (port **9000**)  
 - ngrok tunnel for GitHub webhook communication  
 
+### One-Command Demo (Best for Showcasing)
+
+Run this to start the API, execute multiple sample reviews end-to-end, print structured output, and stop automatically:
+
+```bash
+make demo
+```
+
+This is the fastest way to explain the project to someone in a live demo.
+
 ---
 
 ## API Usage
