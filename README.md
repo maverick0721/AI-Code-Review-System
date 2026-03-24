@@ -131,6 +131,14 @@ pip install -r requirements.txt
 
 ## Running the System
 
+Validate production workflow prerequisites before booting services:
+
+```bash
+make preflight
+```
+
+This fails fast with clear messages if required binaries or environment variables are missing.
+
 Start the development environment:
 
 ```bash

@@ -1,12 +1,16 @@
-.PHONY: dev ai bot ngrok webhook url logs stop clean demo
+.PHONY: preflight dev ai bot ngrok webhook url logs stop clean demo
 
 AI_PORT=8000
 BOT_PORT=9000
+PYTHON ?= python
 
 # ------------------------------
 # Full development environment
 # ------------------------------
-dev: ai bot ngrok webhook
+preflight:
+	@python scripts/preflight_check.py
+
+dev: preflight ai bot ngrok webhook
 	@echo "🎉 Development environment ready"
 
 # ------------------------------
@@ -51,10 +55,15 @@ ngrok:
 	fi
 	@echo "⏳ Waiting for ngrok to be ready..."
 	@export $$(grep NGROK_AUTH_TOKEN .env | xargs) && \
+	ngrok config add-authtoken $$NGROK_AUTH_TOKEN >/dev/null 2>&1 && \
 	nohup ngrok http $(BOT_PORT) > ngrok.log 2>&1 & \
 	echo $$! > ngrok.pid
 	@sleep 5
 	@export NGROK_URL=$$(curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'); \
+	if [ -z "$$NGROK_URL" ] || [ "$$NGROK_URL" = "null" ]; then \
+		echo "❌ Failed to retrieve NGROK_URL. Check ngrok.log"; \
+		exit 1; \
+	fi; \
 	echo "NGROK_URL=$$NGROK_URL"; \
 	if grep -q NGROK_URL .env; then \
 		sed -i "s|NGROK_URL=.*|NGROK_URL=$$NGROK_URL|" .env; \
@@ -73,7 +82,7 @@ url:
 # ------------------------------
 webhook:
 	@echo "🔗 Updating GitHub webhook..."
-	@.venv/bin/python update_webhook.py
+	@$(PYTHON) update_webhook.py
 
 # ------------------------------
 # Show logs

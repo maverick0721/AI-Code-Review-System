@@ -15,6 +15,11 @@ fi
 source .venv/bin/activate
 
 # ------------------------------
+# Preflight checks
+# ------------------------------
+python scripts/preflight_check.py
+
+# ------------------------------
 # Check dependencies
 # ------------------------------
 command -v ngrok >/dev/null 2>&1 || { echo "❌ ngrok is required"; exit 1; }
