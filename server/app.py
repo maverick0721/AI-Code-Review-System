@@ -30,9 +30,21 @@ async def review(req: Request):
     data = await req.json()
     prompt = data.get("prompt")
 
+    if not isinstance(prompt, str) or not prompt.strip():
+        return {
+            "results": [{
+                "issue": "none",
+                "severity": "low",
+                "confidence": 0.0,
+                "explanation": "Invalid request: 'prompt' must be a non-empty string."
+            }]
+        }
+
     cached = get_cache(prompt)
-    if cached:
-        return {"results": cached}
+    if cached is not None:
+        if isinstance(cached, list):
+            return {"results": cached}
+        return {"results": [cached]}
 
     loop = asyncio.get_event_loop()
 
@@ -47,5 +59,5 @@ async def review(req: Request):
     
     set_cache(prompt, result)
 
-    return {"results": result}
+    return {"results": [result]}
 

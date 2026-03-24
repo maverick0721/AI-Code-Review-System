@@ -35,8 +35,11 @@ async def evaluate_sample(client, semaphore, sample):
                 )
 
             result = response.json()
+            results = result.get("results", [])
+            if not results:
+                return "none", normalize(sample["expected_issue"])
 
-            predicted = result["results"][0]["issue"].lower()
+            predicted = str(results[0].get("issue", "none")).lower()
             expected = normalize(sample["expected_issue"])
 
             return predicted, expected
@@ -94,8 +97,8 @@ async def run_async_evaluation(dataset):
 
 def run_evaluation():
 
-    with open("dataset/security_dataset.json") as f:
-    dataset = json.load(f)
+    with open("dataset/dataset/security_dataset.json") as f:
+        dataset = json.load(f)
 
     asyncio.run(run_async_evaluation(dataset))
 
