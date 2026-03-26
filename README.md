@@ -206,7 +206,6 @@ AI-Code-Review-System/
 │   ├── github_integration.py
 │   ├── main.py
 │   ├── prompt_builder.py
-│   └── __pycache__/           # Python bytecode cache
 │
 ├── 📂 core/                   # Core processing engine
 │   ├── __init__.py
