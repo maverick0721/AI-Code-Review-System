@@ -1,328 +1,299 @@
-# AI Code Review System
+# 🛡️ AI Code Review System
 
-An AI-powered security code review platform that automatically analyzes pull requests and source code for vulnerabilities using large language models, static analysis tools, and retrieval-augmented reasoning.
+<div align="center">
 
-The system combines modern LLM inference with traditional security analyzers to produce structured vulnerability reports and automated GitHub pull request comments.
+[![Python](https://img.shields.io/badge/python-3.10+-blue.svg?logo=python&logoColor=ffd643)](https://www.python.org/)
+[![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Docker](https://img.shields.io/badge/docker-ready-blue.svg?logo=docker&logoColor=2496ed)](https://www.docker.com/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-00c653.svg?logo=fastapi&logoColor=ffffff)](https://fastapi.tiangolo.com/)
+[![GPU-Accelerated](https://img.shields.io/badge/GPU-Accelerated-ff6f61.svg?logo=nvidia&logoColor=ffc107)](https://developer.nvidia.com/)
 
----
+Automated AI-powered security code review using LLMs, static analysis, and retrieval-augmented generation.
 
-## Overview
-
-Modern software projects rely heavily on code reviews to detect bugs and security issues before deployment. However, manual review processes are time-consuming and difficult to scale across large repositories.
-
-This project explores how large language models can assist developers by automatically reviewing code changes, identifying potential vulnerabilities, and providing structured explanations directly within GitHub pull requests.
-
-The platform integrates multiple analysis techniques:
-
-- LLM-based reasoning for security vulnerability detection  
-- Static analysis tools for rule-based scanning  
-- Retrieval-augmented security knowledge  
-- GPU batch inference for efficient model execution  
-- GitHub webhook automation for real-time PR reviews  
-
-By combining these components, the system can detect common vulnerabilities such as hardcoded credentials, injection attacks, insecure randomness, weak cryptography, and unsafe file handling.
+</div>
 
 ---
 
-## Features
+## ❗ Problem
 
-- AI-powered security code review  
-- Automated GitHub pull request analysis  
-- GPU-accelerated inference using vLLM  
-- Retrieval-Augmented Generation (RAG) for security context  
-- Integration with Bandit, Ruff, and Semgrep  
-- Structured vulnerability reporting  
-- Async batch processing for higher throughput  
-- CLI tool for scanning repositories locally  
-- Benchmark evaluation framework  
-- Docker-based deployment support  
+Modern codebases are large and fast-moving. Manual code reviews are time-consuming, error-prone, and often miss subtle security vulnerabilities. Most teams lack the bandwidth or expertise to perform deep security reviews on every pull request.
 
 ---
 
-## System Architecture
+## 💡 Solution
 
-```
-GitHub Pull Request
-        │
-        ▼
-GitHub Webhook Bot
-        │
-        ▼
-Diff Parser
-        │
-        ▼
-Code Chunking
-        │
-        ▼
-Static Analysis Layer
-(Bandit / Ruff / Semgrep)
-        │
-        ▼
-Security Knowledge Retrieval (RAG)
-        │
-        ▼
-LLM Inference Server
-(GPU batching via vLLM)
-        │
-        ▼
-Structured Vulnerability Output
-        │
-        ▼
-GitHub PR Comments + Security Report
-```
+**AI-Code-Review-System** automates security code review using large language models (LLMs), static analysis tools, and retrieval-augmented reasoning. It reviews code changes, identifies vulnerabilities, and provides structured explanations directly in GitHub pull requests or via a local CLI.
+
+### ✨ Key Capabilities
+
+| Capability | Description |
+|------------|-------------|
+| 🔍 **LLM-based Detection** | Advanced vulnerability detection using large language models |
+| 📊 **Static Analysis** | Bandit, Ruff, Semgrep integration for pattern matching |
+| 🧠 **RAG Knowledge Base** | Retrieval-augmented security knowledge from OWASP/CWE |
+| ⚡ **GPU Acceleration** | Fast inference using vLLM with quantization |
+| 🔗 **GitHub Integration** | Automated PR reviews with comments |
+| 💻 **Local CLI** | Scan repositories locally with ease |
+| 📈 **Evaluation Framework** | Benchmark precision, recall, and F1 scores |
 
 ---
 
-## Project Structure
+## 🏗️ Architecture
 
-```
-ai-code-review/
+### System Data Flow
 
-cli/
-    Command-line interface for local code review
+![Architecture Diagram](data/architecture-diagram.png)
 
-server/
-    LLM inference server and batching engine
+### Component Architecture
 
-core/
-    Security utilities, static analysis integration, and report generation
+![Component Diagram](data/component-diagram.png)
 
-evaluation/
-    Benchmark scripts and vulnerability datasets
+### Security Scanning Pipeline
 
-dataset/
-    Dataset generation tools
-
-integrations/
-    GitHub webhook automation
-
-Dockerfile
-docker-compose.yml
-Makefile
-pyproject.toml
-README.md
-```
+![Pipeline Diagram](data/pipeline-diagram.png)
 
 ---
 
-## Installation
+## 🚀 Demo Command
 
-Clone the repository:
-
-```bash
-git clone https://github.com/YOUR_USERNAME/AI-Code-Review-System.git
-cd AI-Code-Review-System
-```
-
-Create a virtual environment:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## Running the System
-
-Validate production workflow prerequisites before booting services:
-
-```bash
-make preflight
-```
-
-This fails fast with clear messages if required binaries or environment variables are missing.
-
-Start the development environment:
-
-```bash
-make dev
-```
-
-This launches:
-
-- AI inference server (port **8000**)  
-- GitHub webhook bot (port **9000**)  
-- ngrok tunnel for GitHub webhook communication  
-
-### One-Command Demo (Best for Showcasing)
-
-Run this to start the API, execute multiple sample reviews end-to-end, print structured output, and stop automatically:
-
-```bash
-make demo
-```
-
-This is the fastest way to explain the project to someone in a live demo.
-
----
-
-## API Usage
-
-The inference server exposes a REST endpoint.
-
-**Endpoint**
-
-```
-POST /review
-```
-
-Example request:
+Try it instantly with a single curl command:
 
 ```bash
 curl -X POST http://localhost:8000/review \
--H "Content-Type: application/json" \
--d '{"prompt":"password = \"123456\""}'
+    -H "Content-Type: application/json" \
+    -d '{
+        "prompt": "def authenticate(username, password):\n    if username == \"admin\" and password == \"123456\":\n        return True"
+    }'
 ```
 
-Example response:
+---
+
+## ✅ Results (Sample Output)
 
 ```json
 {
-  "results": [
-    {
-      "issue": "hardcoded credential",
-      "severity": "critical",
-      "confidence": 1.0,
-      "explanation": "Credentials should never be stored directly in source code."
+    "results": [
+        {
+            "issue": "hardcoded credential",
+            "severity": "critical",
+            "confidence": 0.98,
+            "cwe_id": "CWE-798",
+            "explanation": "Credentials should never be stored directly in source code. Use environment variables or a secrets manager.",
+            "line_number": 2,
+            "suggestion": "Use os.environ.get('PASSWORD') or a secrets manager"
+        }
+    ],
+    "scan_metadata": {
+        "files_scanned": 1,
+        "vulnerabilities_found": 1,
+        "scan_time_ms": 234
     }
-  ]
 }
 ```
 
 ---
 
-## CLI Usage
+## 🌟 Why This Matters
 
-The CLI allows scanning a repository locally without GitHub automation.
+| Benefit | Impact |
+|---------|--------|
+| ⏱️ **Saves Time** | Automates tedious, repetitive review tasks |
+| 🐛 **Finds More Bugs** | Catches subtle vulnerabilities missed by humans |
+| 📈 **Scales Easily** | Every PR gets a security review, instantly |
+| 💡 **Actionable** | Explains issues in plain language, right in your workflow |
+| 🔗 **Integrates Anywhere** | Use as a GitHub bot or local CLI |
+
+---
+
+## 🛡️ Supported Vulnerabilities
+
+| Category | Issues Detected |
+|----------|-----------------|
+| 🔑 **Credentials** | Hardcoded passwords, API keys, tokens |
+| 💉 **Injection** | SQL injection, Command injection, XSS |
+| 📁 **File Operations** | Path traversal, unsafe file handling |
+| 🔐 **Cryptography** | Weak encryption, insecure random |
+| 🔓 **Authentication** | Weak auth, session issues |
+| 📦 **Deserialization** | Unsafe pickle/yaml loading |
+| 🌐 **Network** | Insecure SSL, trust boundaries |
+| ⚙️ **Best Practices** | Security misconfigurations |
+
+---
+
+## 🔄 Example Workflow
+
+![Workflow Diagram](data/Workflow-diagram.png)
+
+---
+
+## 💻 CLI Usage
 
 ```bash
-python cli/main.py
+# Review a single file
+python cli/main.py review path/to/file.py
+
+# Scan entire repository
+python cli/main.py scan ./src
+
+# Check diff against main branch
+python cli/main.py diff --base main
 ```
 
-The tool detects modified files, extracts code diffs, and sends them to the AI server for security review.
+---
+
+## 🐳 Quick Start (Docker)
+
+```bash
+# Clone and navigate to project
+cd AI-Code-Review-System
+
+# Start all services
+docker compose up --build
+```
+
+**Start the AI server:**
+```bash
+uvicorn server.app:app --host 0.0.0.0 --port 8000
+```
+
+**(Optional) Start the GitHub bot:**
+```bash
+uvicorn integrations.github_bot:app --host 0.0.0.0 --port 9000
+```
+
+**Expose your local server with ngrok:**
+```bash
+ngrok http 8000
+# or for the GitHub bot:
+ngrok http 9000
+```
+
+Copy the public ngrok URL and use it for webhooks or remote API access.
+
+Services will be available at:
+- **AI Server**: http://localhost:8000
+- **GitHub Bot**: http://localhost:9000
 
 ---
 
-## Supported Vulnerability Categories
+## 📊 Evaluation
 
-The system detects several common security issues including:
-
-- Hardcoded credentials  
-- SQL injection  
-- Command injection  
-- Path traversal  
-- Insecure randomness  
-- Unsafe deserialization  
-- Weak cryptography  
-- Eval injection  
-- Sensitive data exposure  
-- Insecure temporary file usage  
-- Unsafe file handling  
-- Insecure SSL configurations  
-
----
-
-## Evaluation Framework
-
-A benchmark dataset is included to measure model performance.
-
-Run evaluation:
+Run the evaluation framework to measure system performance:
 
 ```bash
 python -m evaluation.evaluator
 ```
 
-Metrics reported:
+### Metrics Tracked
 
-- Precision  
-- Recall  
-- F1 Score  
-
-This framework helps measure how effectively the system identifies vulnerabilities across different categories.
+| Metric | Description |
+|--------|-------------|
+| 🎯 **Precision** | True positives / (True positives + False positives) |
+| 📣 **Recall** | True positives / (True positives + False negatives) |
+| 📐 **F1 Score** | Harmonic mean of precision and recall |
 
 ---
 
-## Docker Deployment
+## 📦 Project Structure
 
-Build containers:
-
-```bash
-docker compose build
+```
+ai-code-review-system/
+├── 📂 cli/                    # Command-line interface
+│   ├── main.py               # CLI entry point
+│   ├── chunker.py            # Code chunking utilities
+│   ├── client.py             # API client
+│   ├── git_utils.py          # Git operations
+│   └── github_integration.py # GitHub API wrapper
+│
+├── 📂 core/                   # Core processing engine
+│   ├── git_diff_parser.py    # Parse git diffs
+│   ├── pr_diff_parser.py      # Parse PR diffs
+│   ├── static_analysis.py     # Static tool integration
+│   └── report_generator.py   # Generate reports
+│
+├── 📂 server/                  # FastAPI server
+│   ├── app.py                 # Main application
+│   ├── llm_engine.py          # LLM inference
+│   ├── model_loader.py        # Model loading
+│   ├── gpu_worker.py          # GPU worker process
+│   ├── rag.py                 # RAG engine
+│   └── reviewer.py            # Review orchestration
+│
+├── 📂 integrations/            # Third-party integrations
+│   └── github_bot.py          # GitHub webhook handler
+│
+├── 📂 evaluation/              # Evaluation framework
+│   ├── evaluator.py           # Main evaluator
+│   ├── metrics.py             # Metrics calculation
+│   └── benchmark.py           # Benchmarking tools
+│
+├── 📂 dataset/                 # Training datasets
+│   ├── generate_dataset.py    # Dataset generator
+│   └── dataset/               # Dataset files
+│
+├── 📂 tests/                   # Test suite
+│   ├── test_github_webhook.py # Webhook tests
+│   └── test_server_review.py  # Server tests
+│
+├── 📂 scripts/                 # Utility scripts
+│   └── preflight_check.py    # Pre-flight checks
+│
+├── 🐳 docker-compose.yml       # Docker orchestration
+├── 📜 Dockerfile               # Container definition
+├── ⚙️  pyproject.toml          # Python project config
+└── 📖 README.md                # This file
 ```
 
-Run services:
+---
 
-```bash
-docker compose up
-```
+## 📚 Security Knowledge Base
 
-Services exposed:
+The RAG system retrieves context from:
 
-| Service | Port |
-|--------|------|
-| AI Server | 8000 |
-| GitHub Bot | 9000 |
+- 📖 **OWASP Top 10** - Web application security risks
+- 🔒 **CWE** - Common Weakness Enumeration
+- 📋 **CVE Databases** - Public vulnerability reports
+- 🔧 **Best Practices** - Security coding guidelines
 
 ---
 
-## Security Knowledge Base
+## ⚠️ Limitations
 
-The retrieval layer enhances model reasoning by providing contextual security information from curated vulnerability sources such as:
-
-- OWASP Top 10  
-- Common Weakness Enumeration (CWE)  
-- Public vulnerability reports  
-
-This improves reasoning quality and reduces hallucinations.
+> **Important**: LLMs are powerful but not a replacement for expert security audits. This tool should be used as an assistant, not a sole authority. Always validate critical findings with security experts.
 
 ---
 
-## Example Workflow
+## 🚧 Future Improvements
 
-1. A developer opens a pull request  
-2. GitHub triggers the webhook bot  
-3. The system retrieves the pull request diff  
-4. Static analyzers scan the code changes  
-5. Relevant security knowledge is retrieved  
-6. The LLM analyzes the code  
-7. Vulnerabilities are posted as pull request comments  
-
----
-
-## Limitations
-
-While large language models provide powerful reasoning capabilities, they should not replace traditional security auditing entirely.
-
-This system is intended to assist developers and security engineers by highlighting potential risks and improving code review efficiency.
+- [ ] Larger datasets & fine-tuning
+- [ ] Multi-model ensemble
+- [ ] Security dashboard UI
+- [ ] Repository-wide scanning
+- [ ] Continuous learning from feedback
+- [ ] Support for more languages
 
 ---
 
-## Future Improvements
+## 👤 Author
 
-Potential directions for further development:
-
-- Larger vulnerability datasets  
-- Model fine-tuning for secure code analysis  
-- Multi-model ensemble inference  
-- Security dashboard interface  
-- Repository-wide scanning capabilities  
-- Continuous learning from developer feedback  
+**Shivang Gupta**  
 
 ---
 
-## Author
+## 📄 License
 
-**Shivang Gupta**
+<div align="center">
+
+MIT License © 2026
+
+*For research and educational use.*
+
+</div>
 
 ---
 
-## License
+<div align="center">
 
-This project is intended for research and educational use.
+**If you find this project useful, please ⭐ star it!**
+
+</div>
