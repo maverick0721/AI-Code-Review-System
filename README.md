@@ -1,4 +1,4 @@
-# 🛡️ AI Code Review System
+# AI Code Review System
 
 <div align="center">
 
@@ -6,7 +6,6 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg?logo=docker&logoColor=2496ed)](https://www.docker.com/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-00c653.svg?logo=fastapi&logoColor=ffffff)](https://fastapi.tiangolo.com/)
-[![GPU-Accelerated](https://img.shields.io/badge/GPU-Accelerated-ff6f61.svg?logo=nvidia&logoColor=ffc107)](https://developer.nvidia.com/)
 
 Automated AI-powered security code review using LLMs, static analysis, and retrieval-augmented generation.
 
