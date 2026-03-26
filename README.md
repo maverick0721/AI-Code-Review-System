@@ -196,51 +196,79 @@ python -m evaluation.evaluator
 ## 📦 Project Structure
 
 ```
-ai-code-review-system/
+AI-Code-Review-System/
 ├── 📂 cli/                    # Command-line interface
-│   ├── main.py               # CLI entry point
-│   ├── chunker.py            # Code chunking utilities
-│   ├── client.py             # API client
-│   ├── git_utils.py          # Git operations
-│   └── github_integration.py # GitHub API wrapper
+│   ├── __init__.py
+│   ├── chunker.py
+│   ├── client.py
+│   ├── diff_parser.py
+│   ├── git_utils.py
+│   ├── github_integration.py
+│   ├── main.py
+│   ├── prompt_builder.py
+│   └── __pycache__/           # Python bytecode cache
 │
 ├── 📂 core/                   # Core processing engine
-│   ├── git_diff_parser.py    # Parse git diffs
-│   ├── pr_diff_parser.py      # Parse PR diffs
-│   ├── static_analysis.py     # Static tool integration
-│   └── report_generator.py   # Generate reports
+│   ├── __init__.py
+│   ├── git_diff_parser.py
+│   ├── pr_diff_parser.py
+│   ├── report_generator.py
+│   ├── static_analysis.py
 │
-├── 📂 server/                  # FastAPI server
-│   ├── app.py                 # Main application
-│   ├── llm_engine.py          # LLM inference
-│   ├── model_loader.py        # Model loading
-│   ├── gpu_worker.py          # GPU worker process
-│   ├── rag.py                 # RAG engine
-│   └── reviewer.py            # Review orchestration
+├── 📂 server/                 # FastAPI server and LLM engine
+│   ├── __init__.py
+│   ├── app.py
+│   ├── cache.py
+│   ├── ensemble.py
+│   ├── gpu_worker.py
+│   ├── llm_engine.py
+│   ├── model_loader.py
+│   ├── rag.py
+│   ├── review_queue.py
+│   ├── reviewer.py
 │
-├── 📂 integrations/            # Third-party integrations
-│   └── github_bot.py          # GitHub webhook handler
+├── 📂 integrations/           # Third-party integrations
+│   └── github_bot.py
 │
-├── 📂 evaluation/              # Evaluation framework
-│   ├── evaluator.py           # Main evaluator
-│   ├── metrics.py             # Metrics calculation
-│   └── benchmark.py           # Benchmarking tools
+├── 📂 evaluation/             # Evaluation framework
+│   ├── __init__.py
+│   ├── benchmark.py
+│   ├── dataset.json
+│   ├── evaluator.py
+│   └── metrics.py
 │
-├── 📂 dataset/                 # Training datasets
-│   ├── generate_dataset.py    # Dataset generator
-│   └── dataset/               # Dataset files
+├── 📂 dataset/                # Training datasets
+│   ├── generate_dataset.py
+│   ├── dataset/               # Dataset files
+│   │   └── security_dataset.json
+│   ├── fastapi/               # Example data (if present)
+│   ├── flask/
+│   └── requests/
 │
-├── 📂 tests/                   # Test suite
-│   ├── test_github_webhook.py # Webhook tests
-│   └── test_server_review.py  # Server tests
+├── 📂 scripts/                # Utility scripts
+│   └── preflight_check.py
 │
-├── 📂 scripts/                 # Utility scripts
-│   └── preflight_check.py    # Pre-flight checks
+├── 📂 tests/                  # Test suite
+│   ├── test_github_webhook.py
+│   └── test_server_review.py
 │
-├── 🐳 docker-compose.yml       # Docker orchestration
-├── 📜 Dockerfile               # Container definition
-├── ⚙️  pyproject.toml          # Python project config
-└── 📖 README.md                # This file
+├── 📂 data/                   # Cache and artifacts
+│   └── cache.json
+│
+├── 🐳 docker-compose.yml      # Docker orchestration
+├── 📜 Dockerfile              # Container definition
+├── ⚙️  pyproject.toml         # Python project config
+├── 📦 requirements.txt        # Python dependencies
+├── 📝 Makefile                # Automation commands
+├── 🔑 .env                    # Environment variables (user-provided)
+├── 🔑 .env.example            # Example environment file
+├── 📄 README.md               # This file
+├── 🚀 run_end_to_end_demo.sh  # End-to-end demo script
+├── 🚀 start_dev.sh            # Dev server startup script
+├── 🛠️  update_webhook.py      # Webhook update utility
+├── 📦 ngrok-v3-stable-linux-amd64.tgz.1  # ngrok binary (example)
+├── 📦 ngrok-v4-stable-linux-amd64.zip.1  # ngrok binary (example)
+├── 📄 fastapi.pid             # FastAPI process ID (runtime)
 ```
 
 ---
